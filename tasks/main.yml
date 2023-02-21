@@ -1,0 +1,43 @@
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+  loop:
+    - "{{ promtail_bin_dir }}"
+    - "{{ promtail_dir }}"
+    # TODO: support XDG_CONFIG_HOME if someone actually uses it
+    - "{{ ansible_user_dir }}/.config/systemd/user"
+
+- name: Download promtail
+  unarchive:
+    src: "{{ promtail_release_url }}"
+    dest: "{{ promtail_bin_dir }}/"
+    remote_src: "{{ promtail_release_url is search('://') | ternary('yes','no') }}"
+    creates: "{{ promtail_bin }}"
+
+- name: Configure promtail
+  template:
+    src: "{{ promtail_config_template_file }}"
+    dest: "{{ promtail_dir }}/promtail_config.yaml"
+  notify: Restart promtail
+
+- name: Install promtail service
+  template:
+    src: promtail.service.j2
+    dest: "{{ ansible_user_dir }}/.config/systemd/user/{{ promtail_service_name }}.service"
+  notify: Restart promtail
+
+- name: Enable loginctl linger
+  command:
+    cmd: "loginctl enable-linger"
+    creates: "/var/lib/systemd/linger/{{ ansible_user_id }}"
+
+- name: Start promtail
+  systemd:
+    scope: user
+    daemon_reload: yes
+    name: "{{ promtail_service_name }}"
+    enabled: yes
+    state: started
+  register: promtail_start

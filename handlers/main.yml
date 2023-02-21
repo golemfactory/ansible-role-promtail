@@ -1,0 +1,8 @@
+- name: Restart promtail
+  systemd:
+    scope: user
+    daemon_reload: yes
+    name: "{{ promtail_service_name }}"
+    enabled: yes
+    state: restarted
+  when: (promtail_start | default({})) is not changed

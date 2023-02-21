@@ -1,0 +1,23 @@
+server:
+  disable: true
+
+positions:
+  filename: {{ promtail_dir }}/promtail_positions.yaml
+
+clients:
+  - url: {{ promtail_loki_url }}
+
+scrape_configs:
+  - job_name: journal
+    journal:
+      labels:
+        hostname: {{ inventory_hostname }}
+        job: systemd-journal
+    relabel_configs:
+      - source_labels: ['__journal__systemd_unit']
+        target_label: 'unit'
+      - source_labels: ['__journal__systemd_user_unit']
+        target_label: 'user_unit'
+      - action: keep
+        source_labels: ['user_unit']
+        regex: '.*service$'

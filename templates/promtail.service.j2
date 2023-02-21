@@ -1,0 +1,13 @@
+[Unit]
+Description=promtail
+After=network.target
+
+[Service]
+Type=simple
+ExecStart={{ promtail_bin }} -config.file={{ promtail_dir }}/promtail_config.yaml
+TimeoutStartSec=10m
+LimitNOFILE=10000
+Restart=always
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,2 @@
+promtail_bin_dir: "{{ promtail_releases_dir }}/promtail_{{ promtail_version }}"
+promtail_bin: "{{ promtail_bin_dir }}/promtail-linux-amd64"
