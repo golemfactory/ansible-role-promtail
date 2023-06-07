@@ -1,4 +1,4 @@
-promtail_version: v2.7.3
+promtail_version: v2.8.2
 promtail_release_url: "https://github.com/grafana/loki/releases/download/{{ promtail_version }}/promtail-linux-amd64.zip"
 promtail_releases_dir: "{{ ansible_user_dir }}/releases"
 promtail_loki_url: "http://localhost:3100/loki/api/v1/push"
